@@ -59,7 +59,10 @@ func WaitForOrderTime(originTime time.Time) {
 		for range ticker.C {
 			now := time.Now()
 			remaining := targetTime.Sub(now)
-
+			if remaining <= 0 {
+				fmt.Println("到达下单时间，开始下单流程...")
+				break
+			}
 			fmt.Printf("\r当前时间: %s | 距离下单时间还剩: %s ",
 				now.Format("2006-01-02 15:04:05"),
 				utils.FormatDuration(remaining))
