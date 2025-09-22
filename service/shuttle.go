@@ -71,6 +71,8 @@ func WaitForOrderTime(originTime time.Time) {
 
 // ProcessOrder 处理下单流程
 func ProcessOrder(shuttle models.ShuttleRoute, date string) {
+	mailService := NewMailService()
+
 	for {
 		reservedSeats, err := api.GetReservedSeats(shuttle.ID, date, config.AppConfig.UserID)
 		if err != nil {
@@ -86,6 +88,9 @@ func ProcessOrder(shuttle models.ShuttleRoute, date string) {
 
 		var wg sync.WaitGroup
 		orderSuccess := false
+		successfulSeat := 0
+		emailSent := false
+		var mutex sync.Mutex
 
 		orderCount := 3
 		if len(availableSeats) < orderCount {
@@ -107,7 +112,27 @@ func ProcessOrder(shuttle models.ShuttleRoute, date string) {
 					fmt.Println("下单失败:", err)
 				} else {
 					fmt.Printf("%d号座位下单成功: %s\n", availableSeats[i], *message)
-					orderSuccess = true
+
+					mutex.Lock()
+					if !orderSuccess {
+						orderSuccess = true
+						successfulSeat = availableSeats[i]
+
+						// 只发送一次邮件通知
+						if !emailSent {
+							userEmail := getUserEmail()
+							if userEmail != "" {
+								err := mailService.SendBookingSuccessEmail(shuttle, date, successfulSeat, userEmail)
+								if err != nil {
+									fmt.Printf("邮件发送失败: %v\n", err)
+								} else {
+									fmt.Printf("购票成功邮件已发送至: %s\n", userEmail)
+									emailSent = true
+								}
+							}
+						}
+					}
+					mutex.Unlock()
 				}
 			}(i)
 		}
@@ -118,4 +143,9 @@ func ProcessOrder(shuttle models.ShuttleRoute, date string) {
 		fmt.Println("本轮下单失败，继续尝试...")
 		time.Sleep(2 * time.Second)
 	}
+}
+
+// getUserEmail 获取用户邮箱地址
+func getUserEmail() string {
+	return config.AppConfig.Mail.UserEmail
 }
