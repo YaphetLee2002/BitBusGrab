@@ -12,6 +12,9 @@ import (
 )
 
 func main() {
+	// 初始化配置
+	config.LoadConfig()
+
 	indexPtr := flag.Int("index", 0, "指定要购买的班车序号（从0开始）")
 	addressPtr := flag.Int("address", 0, "指定校车路线（0：中关村->良乡，1：良乡->中关村）")
 	dateAddrPtr := flag.Int("date", 0, "指定日期为今日后的第几天（默认0为今日）")
@@ -35,7 +38,7 @@ func main() {
 	service.DisplayShuttleList(shuttleList)
 
 	for _, shuttle := range shuttleList.Data {
-		reservedSeats, err := api.GetReservedSeats(shuttle.ID, defaultDate, config.UserID)
+		reservedSeats, err := api.GetReservedSeats(shuttle.ID, defaultDate, config.AppConfig.UserID)
 		if err != nil {
 			fmt.Println("获取座位预定状态错误:", err)
 			continue

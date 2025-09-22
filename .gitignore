@@ -1,0 +1,13 @@
+/main
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.edit.xml
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
+/.idea/BitBusGrab.iml
+
+# 环境变量文件
+.env
+
+# macOS系统文件
+.DS_Store

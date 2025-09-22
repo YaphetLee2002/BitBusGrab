@@ -46,17 +46,17 @@ func makeRequest(url string, headers map[string]string) ([]byte, error) {
 
 func getDefaultHeaders() map[string]string {
 	return map[string]string{
-		"Host":     config.ApiHost,
+		"Host":     config.AppConfig.ApiHost,
 		"Accept":   "application/json",
-		"apitoken": config.ApiToken,
-		"apitime":  config.ApiTime,
+		"apitoken": config.AppConfig.ApiToken,
+		"apitime":  config.AppConfig.ApiTime,
 	}
 }
 
 // GetShuttleList 获取班车列表
 func GetShuttleList(date string, address string) (*models.ShuttleList, error) {
 	url := fmt.Sprintf("http://%s/vehicle/get-list?page=1&limit=20&date=%s&address=%s",
-		config.ApiHost, date, address)
+		config.AppConfig.ApiHost, date, address)
 
 	body, err := makeRequest(url, getDefaultHeaders())
 	if err != nil {
@@ -75,7 +75,7 @@ func GetShuttleList(date string, address string) (*models.ShuttleList, error) {
 // GetShuttleInfo 获取班车详情
 func GetShuttleInfo(id string, userid string) (*models.ShuttleInfo, error) {
 	url := fmt.Sprintf("http://%s/vehicle/get-info?id=%s&userid=%s",
-		config.ApiHost, id, userid)
+		config.AppConfig.ApiHost, id, userid)
 
 	body, err := makeRequest(url, getDefaultHeaders())
 	if err != nil {
@@ -94,7 +94,7 @@ func GetShuttleInfo(id string, userid string) (*models.ShuttleInfo, error) {
 // GetReservedSeats 获取座位预定状态
 func GetReservedSeats(id string, date string, userid string) (*models.ReservedSeats, error) {
 	url := fmt.Sprintf("http://%s/vehicle/get-reserved-seats?id=%s&date=%s&userid=%s",
-		config.ApiHost, id, date, userid)
+		config.AppConfig.ApiHost, id, date, userid)
 
 	body, err := makeRequest(url, getDefaultHeaders())
 	if err != nil {
@@ -113,7 +113,7 @@ func GetReservedSeats(id string, date string, userid string) (*models.ReservedSe
 // CreateOrder 下单
 func CreateOrder(id string, date string, userid string, seatNumber int64) (*string, error) {
 	data := fmt.Sprintf("id=%s&date=%s&seat_number=%d&userid=%s", id, date, seatNumber, userid)
-	url := fmt.Sprintf("http://%s/vehicle/create-order", config.ApiHost)
+	url := fmt.Sprintf("http://%s/vehicle/create-order", config.AppConfig.ApiHost)
 
 	headers := getDefaultHeaders()
 	headers["Content-Type"] = "application/x-www-form-urlencoded"

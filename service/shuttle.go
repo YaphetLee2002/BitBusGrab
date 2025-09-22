@@ -36,7 +36,7 @@ func DisplayReservedSeats(shuttle models.ShuttleRoute, reservedSeats *models.Res
 	fmt.Printf("起点：%s\n", shuttle.OriginAddress)
 	fmt.Printf("终点：%s\n", shuttle.EndAddress)
 	fmt.Printf("已预订座位：%v\n", reservedSeats.Data.ReservedSeatNumber)
-	availableSeats := utils.GetAvailableSeats(reservedSeats.Data.ReservedSeatNumber, config.TotalSeats)
+	availableSeats := utils.GetAvailableSeats(reservedSeats.Data.ReservedSeatNumber, config.AppConfig.TotalSeats)
 	fmt.Printf("空余座位： %v\n", availableSeats)
 	fmt.Printf("班车状态： %s\n", utils.IfFull(reservedSeats.Data.IsFull))
 	fmt.Println("----------------------------------------")
@@ -75,12 +75,12 @@ func WaitForOrderTime(originTime time.Time) {
 // ProcessOrder 处理下单流程
 func ProcessOrder(shuttle models.ShuttleRoute, date string) {
 	for {
-		reservedSeats, err := api.GetReservedSeats(shuttle.ID, date, config.UserID)
+		reservedSeats, err := api.GetReservedSeats(shuttle.ID, date, config.AppConfig.UserID)
 		if err != nil {
 			fmt.Println("获取座位预定状态错误:", err)
 			return
 		}
-		availableSeats := utils.GetAvailableSeats(reservedSeats.Data.ReservedSeatNumber, config.TotalSeats)
+		availableSeats := utils.GetAvailableSeats(reservedSeats.Data.ReservedSeatNumber, config.AppConfig.TotalSeats)
 		fmt.Printf("更新后的空余座位: %v\n", availableSeats)
 
 		if len(availableSeats) < 3 {
@@ -105,7 +105,7 @@ func ProcessOrder(shuttle models.ShuttleRoute, date string) {
 			wg.Add(1)
 			go func(i int) {
 				defer wg.Done()
-				message, err := api.CreateOrder(shuttle.ID, date, config.UserID, int64(availableSeats[i]))
+				message, err := api.CreateOrder(shuttle.ID, date, config.AppConfig.UserID, int64(availableSeats[i]))
 				if err != nil {
 					fmt.Println("下单失败:", err)
 				} else {
