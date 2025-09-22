@@ -37,15 +37,6 @@ func main() {
 
 	service.DisplayShuttleList(shuttleList)
 
-	for _, shuttle := range shuttleList.Data {
-		reservedSeats, err := api.GetReservedSeats(shuttle.ID, defaultDate, config.AppConfig.UserID)
-		if err != nil {
-			fmt.Println("获取座位预定状态错误:", err)
-			continue
-		}
-		service.DisplayReservedSeats(shuttle, reservedSeats)
-	}
-
 	if *indexPtr < 0 || *indexPtr >= len(shuttleList.Data) {
 		fmt.Printf("错误：无效的班车序号 %d，可选范围为 0-%d\n", *indexPtr, len(shuttleList.Data)-1)
 		return
@@ -57,6 +48,16 @@ func main() {
 			fmt.Println("只能抢普通校车，不能抢彩虹巴士...")
 			return
 		}
+
+		// 显示选中班车的详细信息
+		fmt.Printf("\n已选择班车 [%d]：\n", *indexPtr)
+		reservedSeats, err := api.GetReservedSeats(shuttle.ID, defaultDate, config.AppConfig.UserID)
+		if err != nil {
+			fmt.Println("获取座位预定状态错误:", err)
+			return
+		}
+		service.DisplayReservedSeats(shuttle, reservedSeats)
+
 		originTime, err := utils.ParseTime(defaultDate, shuttle.OriginTime)
 		if err != nil {
 			fmt.Println("解析发车时间错误:", err)

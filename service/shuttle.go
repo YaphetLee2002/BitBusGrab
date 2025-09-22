@@ -14,16 +14,13 @@ import (
 // DisplayShuttleList 显示班车列表
 func DisplayShuttleList(shuttleList *models.ShuttleList) {
 	fmt.Println("班车列表：")
-	fmt.Println("----------------------------------------")
+	fmt.Println("序号 | 类型     | 发车时间")
+	fmt.Println("-----|----------|----------")
 	for i, shuttle := range shuttleList.Data {
-		fmt.Printf("[%d] 车次：%s\n", i+1, shuttle.TrainNumber)
-		fmt.Printf("    编号：%s\n", shuttle.ID)
-		fmt.Printf("    类型：%s\n", utils.GetShuttleType(shuttle.Type))
-		fmt.Printf("    时间：%s - %s\n", shuttle.OriginTime, shuttle.EndTime)
-		fmt.Printf("    起点：%s\n", shuttle.OriginAddress)
-		fmt.Printf("    终点：%s\n", shuttle.EndAddress)
-		fmt.Printf("    余座：%d\n", shuttle.ReservationNumAble)
-		fmt.Println("----------------------------------------")
+		fmt.Printf("[%d]  | %s | %s\n",
+			i,
+			utils.GetShuttleType(shuttle.Type),
+			shuttle.OriginTime)
 	}
 }
 
